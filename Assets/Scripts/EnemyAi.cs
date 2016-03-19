@@ -20,8 +20,18 @@ public class EnemyAi : MonoBehaviour
 
         if(dist< enemyCloseAwake)
         {
-            agent = gameObject.GetComponent<NavMeshAgent>();
-            agent.SetDestination(player.transform.position);
+			RaycastHit hit;
+			if (Physics.Raycast(transform.position, vectorFromEnemyToPlayer.normalized, out hit, enemyViewDistance))
+			{
+				if (hit.collider.gameObject == player)
+				{
+					agent = gameObject.GetComponent<NavMeshAgent>();
+					agent.SetDestination(player.transform.position);
+
+				}
+			}
+            //agent = gameObject.GetComponent<NavMeshAgent>();
+            //agent.SetDestination(player.transform.position);
         }
 
         if (dist < enemyViewDistance && angleToPlayer < enemyFieldOfView * 0.5)
