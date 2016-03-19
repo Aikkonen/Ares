@@ -6,9 +6,9 @@ public class EnemyAi : MonoBehaviour
 
     public GameObject player;
     private NavMeshAgent agent;
-    public bool playerInSight = false;
-    public Vector3 playerLastSighted;
     public float enemyFieldOfView = 120;
+    public float enemyViewDistance = 40;
+    public float enemyCloseAwake = 5;
 
 
     // Update is called once per frame
@@ -16,15 +16,28 @@ public class EnemyAi : MonoBehaviour
     {
         float dist = Vector3.Distance(player.transform.position, transform.position);
         Vector3 vectorFromEnemyToPlayer = player.transform.position - transform.position;
-        Vector3 forward = transform.forward;
+        float angleToPlayer = Vector3.Angle(vectorFromEnemyToPlayer, transform.forward);
 
-        float angleToPlayer = Vector3.Angle(vectorFromEnemyToPlayer, forward);
-
-        if (dist < 10 && angleToPlayer < enemyFieldOfView * 0.5)
+        if(dist< enemyCloseAwake)
         {
             agent = gameObject.GetComponent<NavMeshAgent>();
             agent.SetDestination(player.transform.position);
         }
+
+        if (dist < enemyViewDistance && angleToPlayer < enemyFieldOfView * 0.5)
+        {
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, vectorFromEnemyToPlayer.normalized, out hit, enemyViewDistance))
+            {
+                if (hit.collider.gameObject == player)
+                {
+                    agent = gameObject.GetComponent<NavMeshAgent>();
+                    agent.SetDestination(player.transform.position);
+
+                }
+            }
+        }
     }
 }
+
 
